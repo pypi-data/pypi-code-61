@@ -1,0 +1,110 @@
+# Author: Jason Dsouza
+# Github: http://www.github.com/jasmcaus
+
+# Importing the necessary packages
+import os
+import time
+import numpy as np
+from .utils import readToGray
+from .utils import saveNumpy
+
+def preprocess(DIR, classes, name, resized_size=224, train_size=None, isSave = True):
+    """
+    Reads Images in base directory DIR
+    Returns
+        train -> Image Pixel Values with corresponding labels
+    Saves the above variables as .npy files if isSave = True
+    """
+
+    train = [] 
+    try:
+        if os.path.exists(f'{name}.npy'):
+            train = np.load(f'{name}.npy', allow_pickle=True)
+            print('[INFO] Loading from Numpy Files')
+        else:
+            raise FileNotFoundError
+
+    except FileNotFoundError:
+        print(f'[INFO] Could not find {name}.npy. Generating the Image Files')
+        since_preprocess = time.time()
+
+        if train_size is None:
+            train_size = len(os.listdir(os.path.join(DIR, classes[0])))
+
+        for item in classes:
+            class_path = os.path.join(DIR, item)
+            classNum = classes.index(item)
+            count = 0 
+            for image in os.listdir(class_path):
+                if count != train_size:
+                    image_path = os.path.join(class_path, image)
+                    # Returns image RESIZED and GRAY
+                    gray = readToGray(image_path, resized_size)
+
+                    train.append([gray, classNum])
+                    count +=1 
+                    _printTotal(count, item)
+                else:
+                    break
+
+        # Shuffling the Training Set
+        train = shuffle(train)
+
+        # # Converting to Numpy
+        # train = np.array(train)
+
+        # Saves the Train set as a .npy file
+        if isSave == True:
+            #Converts to Numpy and saves
+            print('[INFO] Saving as .npy file')
+            since = time.time()
+
+            saveNumpy(name, train)
+            
+            end = time.time()
+            print(f'{name}.npy saved! Took {end-since}s')
+
+    #Returns Training Set
+    end_preprocess = time.time()
+    print(f'Preprocessing took {end_preprocess-since_preprocess}s')
+    return train
+
+def _printTotal(count, category):
+    print(f'{count} - {category}')
+
+def shuffle(train):
+    """
+    Shuffles the Array
+    """
+    import random
+    random.shuffle(train)
+    return train
+
+def sepTrain(train, IMG_SIZE=224, channels=1):
+    # x = []
+    # y = []
+    # for feature, label in train:
+    #     x.append(feature)
+    #     y.append(label)
+
+    x = [i[0] for i in train]
+    y = [i[1] for i in train]
+
+    # Without reshaping, X.shape --> (no. of images, IMG_SIZE, IMG_SIZE)
+    # On reshaping, X.shape --> (no. of images, IMG_SIZE, IMG_SIZE,channels)
+
+    # Converting to Numpy + Reshaping X
+    x = reshape(x, IMG_SIZE, channels)
+    y = np.array(y)
+
+    return x, y
+
+def reshape(x, IMG_SIZE, channels):
+    return np.array(x).reshape(-1, IMG_SIZE, IMG_SIZE, channels)
+
+def normalize(x):
+    """
+    Normalizes the data to mean 0 and standard deviation 1
+    """
+    x = x/255.0
+    return x

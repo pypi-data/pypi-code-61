@@ -1,0 +1,13 @@
+from setuptools import setup
+
+
+setup(
+    name='nacos_sdk',
+    version='0.0.5',
+    author='zhanghaoran',
+    author_email='haoranzeus@gmail.com',
+    url='https://www.zhanghaoran.cc',
+    packages=['nacossdk'],
+    install_requires=[
+        'requests',
+    ])

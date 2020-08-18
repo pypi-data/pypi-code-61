@@ -1,0 +1,1 @@
+from .faststan import FastSTAN

@@ -1,0 +1,203 @@
+# -*- coding: utf-8 -*-
+
+from aiohttp import ClientSession, TCPConnector, ClientTimeout
+import asyncio
+from cachetools import TTLCache
+from requests import Session
+
+from .api_toolkit import make_headers, multiple_params
+from .base_classes import AsyncInitObject, AsyncWith, SyncWith
+from .cache_utils import self_cache
+from .exceptions import WITH_CODE, UnexpectedResponseCode
+from .typedefs import URLS, L, R
+
+from typing import (
+    Any,
+    Coroutine,
+    Dict,
+    Generator,
+    Generic,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
+
+__all__ = (
+    "AsyncSession",
+    "SyncSession",
+)
+
+
+# XXX: in both functions I need to find a suitable cache_limit
+# 1024 is a relatively random choice and
+# has nothing to do with the desired behavior
+
+def raise_for_status(self, url: str, code: int,
+                     data: Mapping[str, Any]) -> None:
+    if 200 <= code < 400:
+        pass
+    else:
+        excp = next(filter(lambda x: x.code == code, WITH_CODE), None)
+        if excp is not None:
+            raise excp(url, data.get("reason", ""), data.get("message", ""))
+        else:
+            raise UnexpectedResponseCode(
+                url, code, data.get("reason", ""), data.get("message", ""))
+
+
+class AsyncSession(AsyncInitObject, AsyncWith):
+    async def __init__(self, token: str, trust_env: bool = True,
+                       cache_ttl: Union[int, float] = 60,
+                       cache_limit: int = 1024,
+                       use_cache: bool = True,
+                       timeout: Union[int, float] = 30) -> None:
+        headers = make_headers(token)
+        loop = asyncio.get_event_loop()
+        self.session = ClientSession(
+            loop=loop,
+            connector=TCPConnector(use_dns_cache=False, loop=loop),
+            trust_env=trust_env,
+            headers=headers,
+            timeout=ClientTimeout(total=timeout),
+        )
+
+        self.cache = TTLCache(maxsize=cache_limit, ttl=cache_ttl)
+        self.use_cache = use_cache
+
+    async def close(self) -> None:
+        """Close underlying connector.
+        Release all acquired resources.
+        """
+        if not self.closed:
+            # XXX: https://github.com/aio-libs/aiohttp/issues/1925
+            await self.session.close()
+            # Zero-sleep to allow underlying connections to close
+            await asyncio.sleep(0)
+
+    @property
+    def closed(self) -> bool:
+        """Is client session closed.
+        A readonly property.
+        """
+        return self.session.closed
+
+    raise_for_status = raise_for_status
+
+    async def simple_get_json(self, url: str) -> R:
+        async with self.session.get(url) as response:
+            data = await response.json()
+
+            self.raise_for_status(url, response.status, data)
+
+        get_items = data.get("items")
+        if get_items is not None and isinstance(get_items, list):
+            return get_items
+        return data
+
+    @multiple_params
+    async def simple_get_jsons(self, urls: URLS) -> L:
+        return await simple_get_json(urls)  # in reality only one url
+
+    @self_cache
+    async def cached_get_json(self, url: str) -> R:
+        return await self.simple_get_json(url)
+
+    @multiple_params
+    async def cached_get_jsons(self, urls: URLS) -> L:
+        return await self.cached_get_json(urls)  # in reality only one url
+
+    async def get_json(self, url: str, use_cache: Optional[bool] = None) -> R:
+
+        if use_cache is None:
+            use_cache = self.use_cache
+
+        if use_cache:
+            return await self.cached_get_json(url)
+        else:
+            return await self.simple_get_json(url)
+
+    @multiple_params
+    async def get_jsons(
+            self, urls: URLS,
+            use_caches: Optional[Union[List[bool], bool]] = None) -> L:
+
+        # in reality only one url and use_cache
+        return await self.get_json(urls, use_caches)
+
+
+class SyncSession(SyncWith):
+    def __init__(self, token: str, trust_env: bool = True,
+                 cache_ttl: Union[int, float] = 60,
+                 cache_limit: int = 1024, use_cache: bool = True,
+                 timeout: Union[int, float] = 30) -> None:
+        self._closed = False
+
+        headers = make_headers(token)
+        self.session = Session()
+        self.session.trust_env = trust_env
+        self.session.headers.update(headers)
+
+        self.cache = TTLCache(maxsize=cache_limit, ttl=cache_ttl)
+        self.use_cache = use_cache
+
+        self.timeout = timeout
+
+    def close(self) -> None:
+        """Closes all adapters and as such the session"""
+        if not self.closed:
+            self.session.close()
+            self._closed = True
+
+    @property
+    def closed(self) -> bool:
+        """Is client session closed.
+        A readonly property.
+        """
+        return self._closed
+
+    raise_for_status = raise_for_status
+
+    def simple_get_json(self, url: str) -> R:
+        with self.session.get(url, timeout=self.timeout) as response:
+            data = response.json()
+
+            self.raise_for_status(url, response.status_code, data)
+
+        get_items = data.get("items")
+        if get_items is not None and isinstance(get_items, list):
+            return get_items
+        return data
+
+    @multiple_params
+    def simple_get_jsons(self, urls: URLS) -> L:
+        return simple_get_json(urls)  # in reality only one url
+
+    @self_cache
+    def cached_get_json(self, url: str) -> R:
+        return self.simple_get_json(url)
+
+    @multiple_params
+    def cached_get_jsons(self, urls: URLS) -> L:
+        return self.cached_get_json(urls)  # in reality only one url
+
+    def get_json(self, url: str, use_cache: Optional[bool] = None) -> R:
+        if use_cache is None:
+            use_cache = self.use_cache
+
+        if use_cache:
+            return self.cached_get_json(url)
+        else:
+            return self.simple_get_json(url)
+
+    @multiple_params
+    def get_jsons(self, urls: URLS,
+                  use_caches: Optional[Union[List[bool], bool]] = None) -> L:
+
+        # in reality only one url and use_cache
+        return self.get_json(urls, use_caches)

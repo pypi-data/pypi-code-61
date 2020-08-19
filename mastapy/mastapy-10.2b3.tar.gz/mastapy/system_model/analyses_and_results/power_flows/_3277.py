@@ -1,0 +1,203 @@
+﻿'''_3277.py
+
+CouplingHalfPowerFlow
+'''
+
+
+from mastapy.system_model.part_model.couplings import (
+    _2143, _2138, _2141, _2145,
+    _2147, _2148, _2154, _2158,
+    _2161, _2162, _2163, _2165,
+    _2167
+)
+from mastapy._internal import constructor
+from mastapy._internal.cast_exception import CastException
+from mastapy.system_model.analyses_and_results.power_flows import _3313
+from mastapy._internal.python_net import python_net_import
+
+_COUPLING_HALF_POWER_FLOW = python_net_import('SMT.MastaAPI.SystemModel.AnalysesAndResults.PowerFlows', 'CouplingHalfPowerFlow')
+
+
+__docformat__ = 'restructuredtext en'
+__all__ = ('CouplingHalfPowerFlow',)
+
+
+class CouplingHalfPowerFlow(_3313.MountableComponentPowerFlow):
+    '''CouplingHalfPowerFlow
+
+    This is a mastapy class.
+    '''
+
+    TYPE = _COUPLING_HALF_POWER_FLOW
+
+    __hash__ = None
+
+    def __init__(self, instance_to_wrap: 'CouplingHalfPowerFlow.TYPE'):
+        super().__init__(instance_to_wrap)
+        self._freeze()
+
+    @property
+    def component_design(self) -> '_2143.CouplingHalf':
+        '''CouplingHalf: 'ComponentDesign' is the original name of this property.
+
+        Note:
+            This property is readonly.
+        '''
+
+        return constructor.new(_2143.CouplingHalf)(self.wrapped.ComponentDesign) if self.wrapped.ComponentDesign else None
+
+    @property
+    def component_design_of_type_clutch_half(self) -> '_2138.ClutchHalf':
+        '''ClutchHalf: 'ComponentDesign' is the original name of this property.
+
+        Note:
+            This property is readonly.
+        '''
+
+        if _2138.ClutchHalf.TYPE not in self.wrapped.ComponentDesign.__class__.__mro__:
+            raise CastException('Failed to cast component_design to ClutchHalf. Expected: {}.'.format(self.wrapped.ComponentDesign.__class__.__qualname__))
+
+        return constructor.new(_2138.ClutchHalf)(self.wrapped.ComponentDesign) if self.wrapped.ComponentDesign else None
+
+    @property
+    def component_design_of_type_concept_coupling_half(self) -> '_2141.ConceptCouplingHalf':
+        '''ConceptCouplingHalf: 'ComponentDesign' is the original name of this property.
+
+        Note:
+            This property is readonly.
+        '''
+
+        if _2141.ConceptCouplingHalf.TYPE not in self.wrapped.ComponentDesign.__class__.__mro__:
+            raise CastException('Failed to cast component_design to ConceptCouplingHalf. Expected: {}.'.format(self.wrapped.ComponentDesign.__class__.__qualname__))
+
+        return constructor.new(_2141.ConceptCouplingHalf)(self.wrapped.ComponentDesign) if self.wrapped.ComponentDesign else None
+
+    @property
+    def component_design_of_type_cvt_pulley(self) -> '_2145.CVTPulley':
+        '''CVTPulley: 'ComponentDesign' is the original name of this property.
+
+        Note:
+            This property is readonly.
+        '''
+
+        if _2145.CVTPulley.TYPE not in self.wrapped.ComponentDesign.__class__.__mro__:
+            raise CastException('Failed to cast component_design to CVTPulley. Expected: {}.'.format(self.wrapped.ComponentDesign.__class__.__qualname__))
+
+        return constructor.new(_2145.CVTPulley)(self.wrapped.ComponentDesign) if self.wrapped.ComponentDesign else None
+
+    @property
+    def component_design_of_type_part_to_part_shear_coupling_half(self) -> '_2147.PartToPartShearCouplingHalf':
+        '''PartToPartShearCouplingHalf: 'ComponentDesign' is the original name of this property.
+
+        Note:
+            This property is readonly.
+        '''
+
+        if _2147.PartToPartShearCouplingHalf.TYPE not in self.wrapped.ComponentDesign.__class__.__mro__:
+            raise CastException('Failed to cast component_design to PartToPartShearCouplingHalf. Expected: {}.'.format(self.wrapped.ComponentDesign.__class__.__qualname__))
+
+        return constructor.new(_2147.PartToPartShearCouplingHalf)(self.wrapped.ComponentDesign) if self.wrapped.ComponentDesign else None
+
+    @property
+    def component_design_of_type_pulley(self) -> '_2148.Pulley':
+        '''Pulley: 'ComponentDesign' is the original name of this property.
+
+        Note:
+            This property is readonly.
+        '''
+
+        if _2148.Pulley.TYPE not in self.wrapped.ComponentDesign.__class__.__mro__:
+            raise CastException('Failed to cast component_design to Pulley. Expected: {}.'.format(self.wrapped.ComponentDesign.__class__.__qualname__))
+
+        return constructor.new(_2148.Pulley)(self.wrapped.ComponentDesign) if self.wrapped.ComponentDesign else None
+
+    @property
+    def component_design_of_type_rolling_ring(self) -> '_2154.RollingRing':
+        '''RollingRing: 'ComponentDesign' is the original name of this property.
+
+        Note:
+            This property is readonly.
+        '''
+
+        if _2154.RollingRing.TYPE not in self.wrapped.ComponentDesign.__class__.__mro__:
+            raise CastException('Failed to cast component_design to RollingRing. Expected: {}.'.format(self.wrapped.ComponentDesign.__class__.__qualname__))
+
+        return constructor.new(_2154.RollingRing)(self.wrapped.ComponentDesign) if self.wrapped.ComponentDesign else None
+
+    @property
+    def component_design_of_type_spring_damper_half(self) -> '_2158.SpringDamperHalf':
+        '''SpringDamperHalf: 'ComponentDesign' is the original name of this property.
+
+        Note:
+            This property is readonly.
+        '''
+
+        if _2158.SpringDamperHalf.TYPE not in self.wrapped.ComponentDesign.__class__.__mro__:
+            raise CastException('Failed to cast component_design to SpringDamperHalf. Expected: {}.'.format(self.wrapped.ComponentDesign.__class__.__qualname__))
+
+        return constructor.new(_2158.SpringDamperHalf)(self.wrapped.ComponentDesign) if self.wrapped.ComponentDesign else None
+
+    @property
+    def component_design_of_type_synchroniser_half(self) -> '_2161.SynchroniserHalf':
+        '''SynchroniserHalf: 'ComponentDesign' is the original name of this property.
+
+        Note:
+            This property is readonly.
+        '''
+
+        if _2161.SynchroniserHalf.TYPE not in self.wrapped.ComponentDesign.__class__.__mro__:
+            raise CastException('Failed to cast component_design to SynchroniserHalf. Expected: {}.'.format(self.wrapped.ComponentDesign.__class__.__qualname__))
+
+        return constructor.new(_2161.SynchroniserHalf)(self.wrapped.ComponentDesign) if self.wrapped.ComponentDesign else None
+
+    @property
+    def component_design_of_type_synchroniser_part(self) -> '_2162.SynchroniserPart':
+        '''SynchroniserPart: 'ComponentDesign' is the original name of this property.
+
+        Note:
+            This property is readonly.
+        '''
+
+        if _2162.SynchroniserPart.TYPE not in self.wrapped.ComponentDesign.__class__.__mro__:
+            raise CastException('Failed to cast component_design to SynchroniserPart. Expected: {}.'.format(self.wrapped.ComponentDesign.__class__.__qualname__))
+
+        return constructor.new(_2162.SynchroniserPart)(self.wrapped.ComponentDesign) if self.wrapped.ComponentDesign else None
+
+    @property
+    def component_design_of_type_synchroniser_sleeve(self) -> '_2163.SynchroniserSleeve':
+        '''SynchroniserSleeve: 'ComponentDesign' is the original name of this property.
+
+        Note:
+            This property is readonly.
+        '''
+
+        if _2163.SynchroniserSleeve.TYPE not in self.wrapped.ComponentDesign.__class__.__mro__:
+            raise CastException('Failed to cast component_design to SynchroniserSleeve. Expected: {}.'.format(self.wrapped.ComponentDesign.__class__.__qualname__))
+
+        return constructor.new(_2163.SynchroniserSleeve)(self.wrapped.ComponentDesign) if self.wrapped.ComponentDesign else None
+
+    @property
+    def component_design_of_type_torque_converter_pump(self) -> '_2165.TorqueConverterPump':
+        '''TorqueConverterPump: 'ComponentDesign' is the original name of this property.
+
+        Note:
+            This property is readonly.
+        '''
+
+        if _2165.TorqueConverterPump.TYPE not in self.wrapped.ComponentDesign.__class__.__mro__:
+            raise CastException('Failed to cast component_design to TorqueConverterPump. Expected: {}.'.format(self.wrapped.ComponentDesign.__class__.__qualname__))
+
+        return constructor.new(_2165.TorqueConverterPump)(self.wrapped.ComponentDesign) if self.wrapped.ComponentDesign else None
+
+    @property
+    def component_design_of_type_torque_converter_turbine(self) -> '_2167.TorqueConverterTurbine':
+        '''TorqueConverterTurbine: 'ComponentDesign' is the original name of this property.
+
+        Note:
+            This property is readonly.
+        '''
+
+        if _2167.TorqueConverterTurbine.TYPE not in self.wrapped.ComponentDesign.__class__.__mro__:
+            raise CastException('Failed to cast component_design to TorqueConverterTurbine. Expected: {}.'.format(self.wrapped.ComponentDesign.__class__.__qualname__))
+
+        return constructor.new(_2167.TorqueConverterTurbine)(self.wrapped.ComponentDesign) if self.wrapped.ComponentDesign else None

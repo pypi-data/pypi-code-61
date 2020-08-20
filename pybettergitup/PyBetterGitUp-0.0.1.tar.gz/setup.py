@@ -1,0 +1,39 @@
+from setuptools import setup, find_packages
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+setup(
+    name="PyBetterGitUp",
+    version="0.0.1",
+    packages=find_packages(exclude=["tests"]),
+    scripts=['PyBetterGitUp/bgitup.py'],
+    install_requires=[
+        'GitPython==2.1.1',
+        'git-up==1.4.1',
+        'biplist==0.7',
+        'termcolor==1.1.0',
+        'colorama==0.3.7'
+    ],
+
+    # Executable
+    entry_points={
+        'console_scripts': [
+            'bgitup = bgitup:run'
+        ]
+    },
+
+    # Metadata
+    author="Edward Taylor",
+    author_email="edweird06@users.noreply.github.com",
+    description="A better package for git up",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/edweird06/BetterGitUp",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
+    python_requires='>=3.6',
+)

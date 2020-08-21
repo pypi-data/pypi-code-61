@@ -1,0 +1,29 @@
+﻿'''_1244.py
+
+SpecificAcousticImpedance
+'''
+
+
+from mastapy.utility.units_and_measurements import _1156
+from mastapy._internal.python_net import python_net_import
+
+_SPECIFIC_ACOUSTIC_IMPEDANCE = python_net_import('SMT.MastaAPI.Utility.UnitsAndMeasurements.Measurements', 'SpecificAcousticImpedance')
+
+
+__docformat__ = 'restructuredtext en'
+__all__ = ('SpecificAcousticImpedance',)
+
+
+class SpecificAcousticImpedance(_1156.MeasurementBase):
+    '''SpecificAcousticImpedance
+
+    This is a mastapy class.
+    '''
+
+    TYPE = _SPECIFIC_ACOUSTIC_IMPEDANCE
+
+    __hash__ = None
+
+    def __init__(self, instance_to_wrap: 'SpecificAcousticImpedance.TYPE'):
+        super().__init__(instance_to_wrap)
+        self._freeze()
